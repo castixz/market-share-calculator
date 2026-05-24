@@ -1,5 +1,8 @@
 package com.github.castixz.marketshare;
 
+import com.github.castixz.marketshare.calculator.SalesDataShareCalculationResult;
+import com.github.castixz.marketshare.calculator.SalesDataShareCalculator;
+import com.github.castixz.marketshare.constants.Vendor;
 import com.github.castixz.marketshare.loader.RawSalesData;
 import com.github.castixz.marketshare.loader.RawSalesDataQuery;
 import com.github.castixz.marketshare.loader.csv.CsvRawSalesDataLoader;
@@ -28,6 +31,13 @@ public class MarketShareCalculatorApplication {
             throw new IllegalStateException("No data found for query: %s".formatted(query));
         }
         LOG.info("Loaded %d raw sales data items".formatted(rawSalesData.items().size()));
+
+        Vendor[] vendors = {
+                Vendor.ASUS,
+                Vendor.ACER
+        };
+        SalesDataShareCalculationResult result = new SalesDataShareCalculator().calculate(rawSalesData, vendors);
+        LOG.info("Calculating shares done");
     }
 
 }

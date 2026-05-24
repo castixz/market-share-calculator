@@ -3,6 +3,10 @@ package com.github.castixz.marketshare;
 import com.github.castixz.marketshare.calculator.SalesDataShareCalculationResult;
 import com.github.castixz.marketshare.calculator.SalesDataShareCalculator;
 import com.github.castixz.marketshare.constants.Vendor;
+import com.github.castixz.marketshare.export.SalesDataExportFileMetadata;
+import com.github.castixz.marketshare.export.SalesDataExportFormat;
+import com.github.castixz.marketshare.export.SalesDataExporter;
+import com.github.castixz.marketshare.export.SalesDataExporterRegistry;
 import com.github.castixz.marketshare.loader.RawSalesData;
 import com.github.castixz.marketshare.loader.RawSalesDataQuery;
 import com.github.castixz.marketshare.loader.csv.CsvRawSalesDataLoader;
@@ -18,6 +22,7 @@ public class MarketShareCalculatorApplication {
     private static final Logger LOG = Logger.getLogger(MarketShareCalculatorApplication.class.getName());
 
     private static final Path INPUT_FILE_PATH = Path.of(".data", "input", "data.csv");
+    private static final Path OUTPUT_FILE_PATH = Path.of(".data", "output", "export.html");
 
     static void main(String[] args) {
         var query = new RawSalesDataQuery(
@@ -38,6 +43,11 @@ public class MarketShareCalculatorApplication {
         };
         SalesDataShareCalculationResult result = new SalesDataShareCalculator().calculate(rawSalesData, vendors);
         LOG.info("Calculating shares done");
+
+        var exporterRegistry = new SalesDataExporterRegistry();
+        SalesDataExporter exporter = exporterRegistry.getExporter(SalesDataExportFormat.HTML);
+        SalesDataExportFileMetadata output = exporter.export(result, OUTPUT_FILE_PATH);
+        LOG.info("Exported HTML to %s at %s".formatted(output.path(), output.finished()));
     }
 
 }
